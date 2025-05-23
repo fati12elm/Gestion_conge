@@ -22,7 +22,7 @@ Une application web moderne pour la gestion des congés d'entreprise, développ�
 
 1. Cloner le dépôt :
 ```bash
-git clone [url-du-depot]
+git clone https://github.com/fati12elm/Gestion_conge.git
 cd gestion-conges
 ```
 
