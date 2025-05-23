@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestion des Congés{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .navbar-modern {
+            background: #fff !important;
+            box-shadow: 0 2px 12px 0 rgba(33, 150, 243, 0.07);
+            border-bottom: 1px solid #e3e8ee;
+            padding-top: 0.7rem;
+            padding-bottom: 0.7rem;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #2563eb !important;
+            font-size: 1.35rem;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 0.7rem;
+        }
+        .navbar-nav .nav-link {
+            color: #2563eb !important;
+            font-weight: 500;
+            font-size: 1.08rem;
+            margin-right: 0.7rem;
+            border-radius: 1.5rem;
+            padding: 0.45rem 1.2rem;
+            transition: background 0.15s, color 0.15s;
+        }
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+            background: #e8f0fe;
+            color: #1976d2 !important;
+        }
+        .navbar-nav .btn-link.nav-link {
+            color: #dc3545 !important;
+            font-weight: 600;
+        }
+        .navbar-nav .btn-link.nav-link:hover {
+            background: #ffeaea;
+            color: #b71c1c !important;
+        }
+        .navbar-toggler {
+            border: none;
+        }
+        .navbar-toggler:focus {
+            outline: none;
+            box-shadow: none;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-modern">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'accounts:home' %}">
+                <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="Logo">Gestion des Congés
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.role in 'admin,hr,manager' or user.is_superuser %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'leaves:admin_dashboard' %}">Tableau de bord RH/Admin</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'leaves:leave_request_list' %}">Mes congés</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:profile' %}">Mon profil</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link" style="display:inline; padding:0; border:none; background:none;">Déconnexion</button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">Connexion</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block extra_js %}{% endblock %}
+
+    {% if messages %}
+    <div aria-live="polite" aria-atomic="true" style="position: fixed; bottom: 1rem; right: 1rem; z-index: 9999;">
+        {% for message in messages %}
+        <div class="toast show mb-2" style="min-width: 250px; background: #fff; border-left: 5px solid {% if message.tags == 'success' %}#28a745{% elif message.tags == 'warning' %}#ffc107{% elif message.tags == 'error' %}#dc3545{% else %}#007bff{% endif %};">
+            <div class="toast-body">
+                <span style="font-weight: bold;">
+                    {% if message.tags == 'success' %}✔️{% elif message.tags == 'warning' %}⚠️{% elif message.tags == 'error' %}❌{% else %}ℹ️{% endif %}
+                </span>
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.querySelectorAll('.toast').forEach(function(toast) {
+                toast.classList.remove('show');
+            });
+        }, 3500);
+    </script>
+    {% endif %}
+</body>
+</html> 

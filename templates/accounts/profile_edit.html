@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Personal Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user"></i> Informations personnelles
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.first_name|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.last_name|as_crispy_field }}
+                            </div>
+                        </div>
+                        {{ form.email|as_crispy_field }}
+                        {{ form.birth_date|as_crispy_field }}
+                        {{ form.phone|as_crispy_field }}
+                        {{ form.address|as_crispy_field }}
+                        {{ form.bio|as_crispy_field }}
+                        {{ form.profile_picture|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Work Information -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-briefcase"></i> Informations professionnelles
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.employee_id|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.department|as_crispy_field }}
+                            </div>
+                        </div>
+                        {{ form.office_location|as_crispy_field }}
+                        {{ form.hire_date|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Emergency Contact -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-phone"></i> Contact d'urgence
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form.emergency_contact_name|as_crispy_field }}
+                        {{ form.emergency_contact_phone|as_crispy_field }}
+                        {{ form.emergency_contact_relation|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Social Media -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-share-alt"></i> Réseaux sociaux
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form.linkedin|as_crispy_field }}
+                        {{ form.twitter|as_crispy_field }}
+                        {{ form.github|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Preferences -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-cog"></i> Préférences
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form.theme|as_crispy_field }}
+                        {{ form.email_notifications|as_crispy_field }}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Enregistrer les modifications
+                    </button>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

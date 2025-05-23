@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Mes demandes de congé - Gestion des Congés{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Mes demandes de congé</h2>
+        <a href="{% url 'leaves:leave_request_create' %}" class="btn btn-primary">
+            Nouvelle demande
+        </a>
+    </div>
+
+    {% if leave_requests %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in leave_requests %}
+                        <tr>
+                            <td>{{ request.leave_type }}</td>
+                            <td>{{ request.start_date }}</td>
+                            <td>{{ request.end_date }}</td>
+                            <td>
+                                <span class="badge badge-{{ request.get_status_color }}">
+                                    {{ request.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'leaves:leave_request_detail' request.pk %}" 
+                                   class="btn btn-sm btn-info">
+                                    Détails
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Vous n'avez pas encore fait de demande de congé.
+            <a href="{% url 'leaves:leave_request_create' %}" class="alert-link">
+                Créer votre première demande
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Plateforme RH - Congés & Validation{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: #e8f0fe;
+    }
+    .socium-header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 2rem 0 0 2rem;
+    }
+    .socium-logo {
+        height: 38px;
+        margin-right: 1rem;
+    }
+    .socium-hero {
+        max-width: 800px;
+        margin: 3rem auto 0 auto;
+        background: transparent;
+        text-align: center;
+        padding: 0 1rem;
+    }
+    .socium-subtitle {
+        color: #2563eb;
+        font-size: 1.1rem;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        margin-bottom: 2.5rem;
+        font-weight: 600;
+    }
+    .socium-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #1a237e;
+        margin-bottom: 1.5rem;
+        line-height: 1.15;
+    }
+    @media (min-width: 600px) {
+        .socium-title {
+            font-size: 3.2rem;
+        }
+    }
+    .socium-desc {
+        font-size: 1.1rem;
+        color: #222;
+        margin-top: 2.5rem;
+        margin-bottom: 0;
+    }
+</style>
+<div class="socium-header">
+    <img src="https://cdn-icons-png.flaticon.com/512/3062/3062634.png" alt="Logo" class="socium-logo">
+    <span style="font-size:1.3rem; font-weight:700; color:#2563eb; letter-spacing:0.1em;">PLATEFORME RH</span>
+</div>
+<div class="socium-hero">
+    <div class="socium-subtitle">GESTION DES CONGÉS</div>
+    <div class="socium-title">
+        Un espace unique pour centraliser et gérer toutes les demandes de congés de vos collaborateurs
+    </div>
+    <div class="socium-desc">
+        Accédez à un espace collaboratif et centralisé pour gérer les demandes, les validations et le suivi des congés de vos équipes, en toute simplicité et sécurité.
+    </div>
+    {% if user.is_authenticated and user.role not in 'admin,hr,manager' and not user.is_superuser %}
+    <div style="margin-top:2.5rem; display:flex; justify-content:center; gap:1.2rem;">
+        <a href="{% url 'leaves:leave_request_create' %}" class="btn btn-success" style="border-radius:2rem; font-size:1.1rem; padding:0.7rem 2.2rem; font-weight:600; box-shadow:0 2px 8px rgba(33,150,243,0.08); background: linear-gradient(90deg,#43cea2 0%,#185a9d 100%); border:none;">Nouvelle demande</a>
+        <a href="{% url 'leaves:leave_request_list' %}" class="btn btn-primary" style="border-radius:2rem; font-size:1.1rem; padding:0.7rem 2.2rem; font-weight:600; box-shadow:0 2px 8px rgba(33,150,243,0.08); background: linear-gradient(90deg,#1976d2 0%,#42a5f5 100%); border:none;">Mes demandes</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

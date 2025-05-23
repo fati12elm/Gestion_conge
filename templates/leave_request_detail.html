@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Détail de la demande de congé{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Détail de la demande de congé</h2>
+    <table class="table">
+        <tr><th>Employé</th><td>{{ leave_request.employee }}</td></tr>
+        <tr><th>Type</th><td>{{ leave_request.leave_type }}</td></tr>
+        <tr><th>Début</th><td>{{ leave_request.start_date }}</td></tr>
+        <tr><th>Fin</th><td>{{ leave_request.end_date }}</td></tr>
+        <tr><th>Motif</th><td>{{ leave_request.reason }}</td></tr>
+        <tr><th>Statut</th><td>{{ leave_request.get_status_display }}</td></tr>
+        {% if leave_request.attachment %}
+        <tr><th>Pièce jointe</th>
+            <td><a href="{{ leave_request.attachment.url }}" target="_blank">Voir la pièce jointe</a></td>
+        </tr>
+        {% endif %}
+    </table>
+
+    {% if user.is_superuser or user.role in 'hr,admin,manager' %}
+    <form method="post" action="{% url 'leaves:leave_request_validate' leave_request.pk %}">
+        {% csrf_token %}
+        <button name="action" value="approve" class="btn btn-success">Valider</button>
+        <button name="action" value="reject" class="btn btn-danger">Refuser</button>
+    </form>
+    {% endif %}
+
+    <a href="{% url 'leaves:leave_request_list' %}" class="btn btn-secondary mt-3">Retour à la liste</a>
+</div>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+
+{% block title %}Détails de la demande de congé{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="h4 mb-0">Détails de la demande de congé</h2>
+                <div>
+                    {% if leave_request.status == 'pending' %}
+                        {% if user.role in 'hr,admin' or user.role == 'manager' and user.department == leave_request.user.department %}
+                            <a href="{% url 'leaves:leave_request_validate' leave_request.pk %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-check"></i> Valider
+                            </a>
+                        {% endif %}
+                        {% if user == leave_request.user %}
+                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#cancelModal">
+                                <i class="fas fa-times"></i> Annuler
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Statut</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge {% if leave_request.status == 'approved' %}bg-success
+                            {% elif leave_request.status == 'rejected' %}bg-danger
+                            {% elif leave_request.status == 'cancelled' %}bg-secondary
+                            {% else %}bg-warning{% endif %}">
+                            {{ leave_request.get_status_display }}
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4">Employé</dt>
+                    <dd class="col-sm-8">{{ leave_request.user.get_full_name }}</dd>
+
+                    <dt class="col-sm-4">Département</dt>
+                    <dd class="col-sm-8">{{ leave_request.user.department }}</dd>
+
+                    <dt class="col-sm-4">Type de congé</dt>
+                    <dd class="col-sm-8">{{ leave_request.leave_type.name }}</dd>
+
+                    <dt class="col-sm-4">Période</dt>
+                    <dd class="col-sm-8">
+                        Du {{ leave_request.start_date|date:"d/m/Y" }}
+                        au {{ leave_request.end_date|date:"d/m/Y" }}
+                        ({{ leave_request.duration }} jour(s))
+                    </dd>
+
+                    <dt class="col-sm-4">Motif</dt>
+                    <dd class="col-sm-8">{{ leave_request.reason }}</dd>
+
+                    <dt class="col-sm-4">Date de demande</dt>
+                    <dd class="col-sm-8">{{ leave_request.created_at|date:"d/m/Y H:i" }}</dd>
+
+                    {% if leave_request.validated_by %}
+                        <dt class="col-sm-4">Validé par</dt>
+                        <dd class="col-sm-8">
+                            {{ leave_request.validated_by.get_full_name }}
+                            le {{ leave_request.validation_date|date:"d/m/Y H:i" }}
+                        </dd>
+
+                        {% if leave_request.validation_comment %}
+                            <dt class="col-sm-4">Commentaire</dt>
+                            <dd class="col-sm-8">{{ leave_request.validation_comment }}</dd>
+                        {% endif %}
+                    {% endif %}
+                </dl>
+
+                {% if leave_request.attachments.exists %}
+                    <h5 class="mt-4">Pièces jointes</h5>
+                    <ul class="list-group">
+                        {% for attachment in leave_request.attachments.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-paperclip"></i>
+                                    <a href="{{ attachment.file.url }}" target="_blank">
+                                        Pièce jointe #{{ forloop.counter }}
+                                    </a>
+                                </div>
+                                <small class="text-muted">
+                                    Ajoutée le {{ attachment.uploaded_at|date:"d/m/Y H:i" }}
+                                </small>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if leave_request.status == 'pending' and user == leave_request.user %}
+                    <div class="mt-4">
+                        <h5>Ajouter une pièce jointe</h5>
+                        <form action="{% url 'leaves:add_attachment' leave_request.pk %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <input type="file" name="file" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> Ajouter
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'leaves:leave_request_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal d'annulation -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmer l'annulation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir annuler cette demande de congé ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
+                <form action="{% url 'leaves:leave_request_validate' leave_request.pk %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="cancelled">
+                    <button type="submit" class="btn btn-danger">Oui, annuler</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

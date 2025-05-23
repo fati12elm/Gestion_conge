@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Validation de la demande de congé{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="h4 mb-0">Validation de la demande de congé</h2>
+            </div>
+            <div class="card-body">
+                <!-- Informations sur la demande -->
+                <div class="mb-4">
+                    <h5>Détails de la demande</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Employé</dt>
+                        <dd class="col-sm-8">{{ leave_request.user.get_full_name }}</dd>
+
+                        <dt class="col-sm-4">Type de congé</dt>
+                        <dd class="col-sm-8">{{ leave_request.leave_type.name }}</dd>
+
+                        <dt class="col-sm-4">Période</dt>
+                        <dd class="col-sm-8">
+                            Du {{ leave_request.start_date|date:"d/m/Y" }}
+                            au {{ leave_request.end_date|date:"d/m/Y" }}
+                            ({{ leave_request.duration }} jour(s))
+                        </dd>
+
+                        <dt class="col-sm-4">Motif</dt>
+                        <dd class="col-sm-8">{{ leave_request.reason }}</dd>
+
+                        <dt class="col-sm-4">Date de demande</dt>
+                        <dd class="col-sm-8">{{ leave_request.created_at|date:"d/m/Y H:i" }}</dd>
+                    </dl>
+
+                    {% if leave_request.attachments.exists %}
+                        <h6>Pièces jointes</h6>
+                        <ul class="list-unstyled">
+                            {% for attachment in leave_request.attachments.all %}
+                                <li>
+                                    <i class="fas fa-paperclip"></i>
+                                    <a href="{{ attachment.file.url }}" target="_blank">
+                                        Pièce jointe #{{ forloop.counter }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Formulaire de validation -->
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Valider la décision
+                        </button>
+                        <a href="{% url 'leaves:leave_request_detail' leave_request.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour aux détails
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
